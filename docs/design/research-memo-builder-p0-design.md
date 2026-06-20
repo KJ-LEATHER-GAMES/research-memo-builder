@@ -2,7 +2,7 @@
 title: Research Memo Builder P0実装設計書
 document_id: research-memo-builder-p0-design
 status: draft
-version: 0.1.0-draft.1
+version: 0.1.0-draft.2
 updated: 2026-06-20
 project: Research Memo Builder
 milestone: M1.5
@@ -468,10 +468,10 @@ CLI層は、このDTOを受け取って終了コードを決定する。
 |---|---:|---|
 | `--input <path>` | Yes | 入力YAMLパス |
 | `--out <path>` | No | 出力先上書き。未指定時はYAMLの `output.dir` を使う |
-| `--dry-run` | No | APIを呼ばず、生成クエリだけ表示する |
+| `--dry-run` | No | APIを呼ばず、入力検証・デフォルト補完・生成クエリ・リクエスト予定数を確認する。P0実装必須機能 |
 | `--help` | No | 使い方を表示して終了する |
 
-M1雛形で `--out` と `--dry-run` を用意済みのため、P0設計でも任意機能として扱う。
+M1雛形で `--out` と `--dry-run` を用意済みである。P0設計では、`--out` は正式な任意引数、`--dry-run` はP0で実装必須の確認機能として扱う。
 
 ### 5.2 P0で受け付けない引数
 
@@ -846,11 +846,13 @@ P0では作成しない。
 | Task | 内容 | Exit条件 |
 |---|---|---|
 | M2-1 | `env.ts` 作成 | `.env` から `BRAVE_API_KEY` を読み込める |
-| M2-2 | `researchInputLoader.ts` 作成 | YAMLファイルを読み込める |
-| M2-3 | `researchInputValidator.ts` 作成 | `ResolvedResearchInput` を生成できる |
-| M2-4 | `searchQueryBuilder.ts` 作成 | 1キーワード×1媒体のクエリを生成できる |
-| M2-5 | `braveSearchClient.ts` 作成 | 1クエリをBrave Search APIへ送信できる |
-| M2-6 | APIキー未設定エラー実装 | APIキーなしでExit Code 3になる |
+| M2-2 | `yaml` / `zod` 依存追加 | YAML読み込みとschema validationを実装できる |
+| M2-3 | `researchInputLoader.ts` 作成 | YAMLファイルを読み込める |
+| M2-4 | `researchInputSchema.ts` 作成 | Zod schemaで `ResolvedResearchInput` を生成できる |
+| M2-5 | `searchQueryBuilder.ts` 作成 | 1キーワード×1媒体のクエリを生成できる |
+| M2-6 | dry-run実装 | APIを呼ばずに生成クエリとリクエスト予定数を確認できる |
+| M2-7 | `braveSearchClient.ts` 作成 | Node標準 `fetch` で1クエリをBrave Search APIへ送信できる |
+| M2-8 | APIキー未設定エラー実装 | APIキーなしでExit Code 3になる |
 
 ### 9.2 M3：複数検索・正規化・重複排除
 
@@ -904,31 +906,175 @@ P0では作成しない。
 
 ---
 
-## 11. 未決事項
 
-P0実装前に、以下は最終確認する。
+## 11. 設計決定
 
-| ID | 未決事項 | 推奨方針 |
-|---|---|---|
-| TBD-001 | 入力バリデーションをZodで行うか、手書きで行うか | P0では手書きでも可。P1でZod検討 |
-| TBD-002 | CLI引数パーサーを使うか、自前で実装するか | P0では自前でも可。拡張時にcommander等を検討 |
-| TBD-003 | HTTPクライアントをNode標準fetchにするか | P0ではNode標準fetchを推奨 |
-| TBD-004 | CSVライブラリを使うか | P0では自前実装で可。複雑化したらライブラリ検討 |
-| TBD-005 | `--out` を正式P0仕様に含めるか | M1雛形互換として任意実装にする |
+この章では、P0実装前レビューで決定した設計判断を記録する。
+
+### DD-P0-001 CSV文字コード
+
+`search-results.csv` は **UTF-8 with BOM** で出力する。
+
+理由は、日本語のタイトル・スニペットをWindows環境やExcelで直接確認する運用を優先するためである。
+
+P0におけるCSVは、人間が検索結果を確認するためのレビュー用成果物として扱う。将来的な機械処理用途は、P1以降で追加する `normalized-results.json` を優先する。
+
+実装上の扱いは以下とする。
+
+| 項目 | 決定 |
+|---|---|
+| 対象ファイル | `search-results.csv` |
+| 文字コード | UTF-8 |
+| BOM | 付与する |
+| 0件時 | BOM + ヘッダー行を出力する |
+| CSVエスケープ | カンマ、ダブルクォート、改行を壊れないように処理する |
+
+### DD-P0-002 `--out`
+
+`--out` は **P0正式仕様に含める**。
+
+ただし、CLI引数としては任意である。
+
+`--out` が指定された場合は、入力YAMLの `output.dir` よりも `--out` を優先する。未指定の場合は、入力YAMLの `output.dir` を使用する。
+
+```text
+出力先の優先順位:
+1. CLI引数 `--out`
+2. 入力YAML `output.dir`
+```
+
+理由は、検証実行や一時出力のたびにYAMLを書き換える手間を避けるためである。
+
+実装上の扱いは以下とする。
+
+| ケース | 出力先 |
+|---|---|
+| `--out` 指定あり | `--out` の値 |
+| `--out` 指定なし | 入力YAMLの `output.dir` |
+| `--out` が空文字 | 入力不正 |
+| `--out` が絶対パス | 入力不正 |
+| `--out` に `../` を含む | 入力不正 |
+
+### DD-P0-003 `--dry-run`
+
+`--dry-run` は **P0必須機能に格上げする**。
+
+ただし、毎回のCLI実行で指定必須という意味ではない。P0実装範囲の中で、`--dry-run` オプション自体を必ず実装するという意味である。
+
+`--dry-run` 指定時は、Brave Search APIを呼び出さず、CSV/Markdownも出力しない。
+
+処理範囲は以下とする。
+
+1. CLI引数をパースする
+2. 入力YAMLを読み込む
+3. 入力バリデーションを行う
+4. デフォルト値を補完する
+5. 検索クエリを生成する
+6. 生成クエリ一覧を表示する
+7. リクエスト予定数を表示する
+8. 出力予定ディレクトリを表示する
+
+理由は、APIコスト発生前に、入力内容・生成クエリ・リクエスト数を確認できるようにするためである。
+
+実装上の扱いは以下とする。
+
+| 項目 | 決定 |
+|---|---|
+| API呼び出し | 行わない |
+| CSV出力 | 行わない |
+| Markdown出力 | 行わない |
+| 入力バリデーション | 行う |
+| デフォルト補完 | 行う |
+| 検索クエリ生成 | 行う |
+| 正常終了時のExit Code | `0` |
+| 入力不正時のExit Code | `2` |
+| APIキー確認 | 行わない。API呼び出しをしないため |
+
+### DD-P0-004 入力バリデーション
+
+入力YAMLのバリデーションには **Zod** を採用する。
+
+理由は、P0入力では、必須項目、任意項目、デフォルト補完、件数制限、P0対象外フラグの禁止など、複数の検証ルールを安定して扱う必要があるためである。
+
+Zodは、YAMLパース後の `unknown` を `ResolvedResearchInput` に変換する境界で使用する。
+
+```text
+YAMLファイル
+  ↓
+YAML parse result: unknown
+  ↓
+Zod schema validation
+  ↓
+ResolvedResearchInput
+  ↓
+UseCase / Service
+```
+
+実装上の扱いは以下とする。
+
+| 項目 | 決定 |
+|---|---|
+| 使用箇所 | `src/input/researchInputSchema.ts` |
+| 入力 | YAMLパース後の `unknown` |
+| 出力 | `ResolvedResearchInput` |
+| デフォルト補完 | Zod schemaで行う |
+| P0対象外フラグ | `true` の場合は入力不正 |
+| `platforms[].site` 重複 | schemaまたはschema後処理で検出する |
+
+追加依存は以下とする。
+
+```bash
+npm install zod yaml
+```
+
+### DD-P0-005 HTTPクライアント
+
+Brave Search API接続には **Node標準 `fetch`** を採用する。
+
+理由は、P0ではBrave Search APIへの単純なGETリクエストが中心であり、axios等の外部HTTPクライアントを追加する必要性が低いためである。
+
+ただし、`fetch` をアプリケーション全体に散らさない。HTTPアクセスは `BraveSearchClient` に閉じ込める。
+
+実装上の扱いは以下とする。
+
+| 項目 | 決定 |
+|---|---|
+| HTTPクライアント | Node標準 `fetch` |
+| 使用箇所 | `src/adapters/braveSearchClient.ts` |
+| 認証 | HTTPヘッダーで `BRAVE_API_KEY` を渡す |
+| APIキー表示 | 標準出力、標準エラー、CSV、Markdownに出さない |
+| 検索結果URLへのHTTPアクセス | 行わない |
+| 将来差し替え | `BraveSearchClient` の内部実装として差し替える |
+
+P0では、HTTPクライアントの差し替えや高度なリトライ制御は行わない。API失敗時は対象クエリを失敗扱いにし、P1以降でリトライや詳細なレポート出力を検討する。
 
 ---
 
-## 12. P0設計完了条件
+## 12. 残未決事項
+
+P0実装前レビューにより、CSV文字コード、`--out`、`--dry-run`、入力バリデーション、HTTPクライアントは設計決定済みとする。
+
+P0実装開始時点で残す未決事項は以下である。
+
+| ID | 未決事項 | 推奨方針 |
+|---|---|---|
+| TBD-002 | CLI引数パーサーを使うか、自前で実装するか | P0では自前実装でも可。拡張時にcommander等を検討 |
+| TBD-004 | CSVライブラリを使うか | P0では自前実装で可。複雑化したらライブラリ検討 |
+
+---
+
+## 13. P0設計完了条件
 
 この設計ドキュメントは、以下を満たした時点で完了とする。
 
 - 入力YAMLのRaw型とResolved型が定義されている
 - P0対象外出力フラグの扱いが定義されている
 - DTO一覧と責務が定義されている
-- CLI引数とdry-runの扱いが定義されている
+- CLI引数、`--out`、dry-runの扱いが定義されている
 - P0出力ファイルと上書き方針が定義されている
 - CSVの列、文字コード、0件時の扱いが定義されている
 - Markdownの章構成と注意書きが定義されている
 - Exit Codeが定義されている
 - ディレクトリ構成とファイル責務が定義されている
+- 5つの設計決定が記録されている
 - M2〜M5へ落とせる実装タスクが定義されている
