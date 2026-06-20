@@ -1,0 +1,36 @@
+topic: 家庭内ルールを書き出したら、仕様書になっていた話
+
+articleType:
+  devDiary: true
+  techArticle: false
+  paidNoteCandidate: false
+
+keywords:
+  - 家庭内ルール 仕様書
+  - 家庭内ルール 要件定義
+  - 家庭内 ポイント制度 設計
+  - 子育て 仕組み化 note
+  - 家庭内ルール プロダクト設計
+
+platforms:
+  - name: note
+    site: note.com
+  - name: Qiita
+    site: qiita.com
+  - name: Zenn
+    site: zenn.dev
+
+search:
+  countPerQuery: 10
+  country: JP
+  searchLang: ja
+  uiLang: ja-JP
+  extraSnippets: true
+
+output:
+  dir: output/research/ats-rule-spec
+  csv: true
+  markdownMemo: true
+  json: false
+  runReport: false
+  chatgptPrompt: false
