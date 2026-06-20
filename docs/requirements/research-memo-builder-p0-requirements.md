@@ -2,7 +2,7 @@
 title: Research Memo Builder P0要件定義書
 document_id: research-memo-builder-p0-requirements
 status: active
-version: 1.0.0
+version: 1.0.1
 updated: 2026-06-20
 project: Research Memo Builder
 milestone: M0.5
@@ -550,6 +550,18 @@ P0の `research-memo.md` には、以下の注意書きを含める。
 | P0-ERR-023 | 一部クエリAPI失敗、1件以上のクエリ成功      | 成功分からCSV/Markdownを生成する                        |         0 |
 | P0-ERR-024 | 一部クエリAPI失敗、成功クエリはあるが検索結果0件 | ヘッダー行のみのCSVと、成功クエリでは0件だったことを明記したMarkdownを出力する |         0 |
 
+### 10.5 P0 exit code定義
+
+| Exit Code | 名前 | ケース | 出力方針 |
+|---:|---|---|---|
+| 0 | SUCCESS | 全処理成功。検索結果0件も含む | CSV/Markdownを生成する |
+| 1 | PARTIAL_API_FAILURE | 一部クエリがAPI失敗したが、1件以上のクエリは成功 | 成功分からCSV/Markdownを生成する |
+| 2 | INPUT_ERROR | CLI引数不正、入力ファイル不正、YAML不正、入力値不正 | 出力しない |
+| 3 | CONFIG_ERROR | `.env` または `BRAVE_API_KEY` 不備 | 出力しない |
+| 4 | ALL_API_FAILURE | 生成クエリはあるが、全クエリのAPI呼び出しが失敗 | 可能なら空CSV/失敗メモを生成する |
+| 5 | OUTPUT_ERROR | 出力ディレクトリ作成失敗、ファイル書き込み失敗 | 不完全の可能性あり |
+| 9 | UNEXPECTED_ERROR | 想定外例外 | 不定 |
+
 ---
 
 ## 11. APIキー管理要件
@@ -607,13 +619,19 @@ P0の基本実行コマンドは以下を想定する。
 npm run research -- --input research/inputs/ats-rule-spec.yaml
 ```
 
-| ID         | 要件                                               |
-| ---------- | ------------------------------------------------ |
-| P0-CLI-001 | `--input` で入力YAMLを指定できる                          |
-| P0-CLI-002 | `--input` 未指定時はエラーにする                            |
-| P0-CLI-003 | P0では `--out` の実装は任意とし、入力YAMLの `output.dir` を優先する |
-| P0-CLI-004 | P0では `--dry-run` は必須要件に含めない                      |
-| P0-CLI-005 | P0では `--use-cache` を実装しない                        |
+| ID         | 要件                                                                     |
+| ---------- | ---------------------------------------------------------------------- |
+| P0-CLI-001 | `--input` で入力YAMLを指定できる                                                |
+| P0-CLI-002 | `--input` 未指定時は入力不正として停止する                                             |
+| P0-CLI-003 | `--out` はP0正式仕様に含める。ただしCLI引数としては任意とする                                  |
+| P0-CLI-004 | `--out` 指定時は、入力YAMLの `output.dir` より優先する                               |
+| P0-CLI-005 | `--out` 未指定時は、入力YAMLの `output.dir` を使用する                               |
+| P0-CLI-006 | `--out` には絶対パス、空文字、`../` を許可しない                                        |
+| P0-CLI-007 | `--dry-run` はP0必須機能として実装する                                             |
+| P0-CLI-008 | `--dry-run` 指定時は、APIを呼ばず、CSV/Markdownも出力しない                            |
+| P0-CLI-009 | `--dry-run` 指定時は、入力検証、デフォルト補完、検索クエリ生成、予定リクエスト数表示まで行う                   |
+| P0-CLI-010 | P0では `--use-cache` を実装しない。指定時は入力不正として停止する                              |
+| P0-CLI-011 | P0では `--json`、`--run-report`、`--chatgpt-prompt` を実装しない。指定時は入力不正として停止する |
 
 ---
 
@@ -670,6 +688,16 @@ npm run research -- --input research/inputs/ats-rule-spec.yaml
 | P0-IAC-018 | 検索結果URLへ直接HTTPアクセスしない                                                                 |
 | P0-IAC-019 | 同名の `search-results.csv` と `research-memo.md` が存在する場合、上書きされる                          |
 | P0-IAC-020 | `output.json`、`output.runReport`、`output.chatgptPrompt` が `true` の場合は入力不正として停止する      |
+| P0-IAC-021 | `--out` を指定した場合、入力YAMLの `output.dir` より `--out` が優先される |
+| P0-IAC-022 | `--out` に絶対パス、空文字、`../` が含まれる場合は入力不正として停止する |
+| P0-IAC-023 | `--dry-run` 指定時はBrave Search APIを呼び出さない |
+| P0-IAC-024 | `--dry-run` 指定時はCSV/Markdownを出力しない |
+| P0-IAC-025 | `--dry-run` 指定時は検索クエリ一覧と予定リクエスト数を表示する |
+| P0-IAC-026 | 入力不正時は Exit Code 2 で終了する |
+| P0-IAC-027 | APIキー不備時は Exit Code 3 で終了する |
+| P0-IAC-028 | 一部API失敗時は Exit Code 1 で終了し、成功分からCSV/Markdownを生成する |
+| P0-IAC-029 | 全API失敗時は Exit Code 4 で終了する |
+| P0-IAC-030 | 出力失敗時は Exit Code 5 で終了する |
 
 ---
 
