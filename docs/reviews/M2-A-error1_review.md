@@ -181,7 +181,7 @@ const searchOptionsSchema = z
   .object({
     countPerQuery: z.number().int().min(1).max(20).default(10),
     country: nonEmptyTrimmedString.default("JP"),
-    searchLang: nonEmptyTrimmedString.default("ja"),
+    searchLang: nonEmptyTrimmedString.default("jp"),
     uiLang: nonEmptyTrimmedString.default("ja-JP"),
     extraSnippets: z.boolean().default(true),
   })
@@ -333,7 +333,7 @@ const searchOptionsSchema = z
       .max(20, "search.countPerQuery must be 20 or less")
       .default(10),
     country: nonEmptyTrimmedString.default("JP"),
-    searchLang: nonEmptyTrimmedString.default("ja"),
+    searchLang: nonEmptyTrimmedString.default("jp"),
     uiLang: nonEmptyTrimmedString.default("ja-JP"),
     extraSnippets: z
       .boolean({
@@ -359,7 +359,7 @@ const searchOptionsBodySchema = z
       .max(20, "search.countPerQuery must be 20 or less")
       .default(10),
     country: nonEmptyTrimmedString.default("JP"),
-    searchLang: nonEmptyTrimmedString.default("ja"),
+    searchLang: nonEmptyTrimmedString.default("jp"),
     uiLang: nonEmptyTrimmedString.default("ja-JP"),
     extraSnippets: z
       .boolean({
@@ -407,7 +407,7 @@ extraSnippets default true
 search: {
   countPerQuery: 10,
   country: "JP",
-  searchLang: "ja",
+  searchLang: "jp",
   uiLang: "ja-JP",
   extraSnippets: true,
 }
@@ -426,7 +426,7 @@ search:
 search: {
   countPerQuery: 5,
   country: "JP",
-  searchLang: "ja",
+  searchLang: "jp",
   uiLang: "ja-JP",
   extraSnippets: true,
 }

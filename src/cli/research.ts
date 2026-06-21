@@ -1,3 +1,5 @@
+import { runResearchUseCase } from "../application/runResearchUseCase.js";
+import { EnvConfigError } from "../config/env.js";
 import { ResearchExitCode } from "../domain/researchExitCode.js";
 import type { ResolvedResearchInput } from "../domain/researchInput.js";
 import type { SearchQuery } from "../domain/searchQuery.js";
@@ -11,6 +13,7 @@ import {
 } from "../input/researchInputLoader.js";
 import { buildSearchQueries } from "../services/searchQueryBuilder.js";
 import { assertSafeRelativePath, UnsafePathError } from "../utils/safePath.js";
+import type { RunResearchUseCaseResult } from "../application/runResearchUseCase.js";
 
 type ResearchCliArgs = {
   input?: string;
@@ -31,7 +34,9 @@ function printHelp(): void {
 Research Memo Builder
 
 Usage:
+  npm run research -- --input research/inputs/ats-rule-spec.yaml
   npm run research -- --input research/inputs/ats-rule-spec.yaml --dry-run
+  npm run research -- --input research/inputs/ats-rule-spec.yaml --out output/research/ats-rule-spec
   npm run research -- --input research/inputs/ats-rule-spec.yaml --out output/research/ats-rule-spec --dry-run
 
 Options:
@@ -45,6 +50,10 @@ P0 unsupported options:
   --json
   --run-report
   --chatgpt-prompt
+
+M2-B note:
+  Normal execution calls Brave Search API for the first generated query only.
+  CSV/Markdown output is not generated yet.
 `);
 }
 
@@ -182,18 +191,46 @@ function printDryRunResult(
   console.log("No CSV or Markdown files were written.");
 }
 
+function printM2BSuccessResult(result: RunResearchUseCaseResult): void {
+  console.log("M2-B single search completed.");
+  console.log("");
+  console.log("Search execution");
+  console.log(`  Generated query count: ${result.queryCount}`);
+  console.log(`  Executed query count: ${result.executedQueryCount}`);
+  console.log(`  First query: ${result.firstQuery ?? "(unknown)"}`);
+  console.log(`  Retrieved item count: ${result.retrievedItemCount}`);
+  console.log("");
+  console.log("CSV/Markdown output is skipped in M2-B.");
+}
+
+function printM2BFailureResult(result: RunResearchUseCaseResult): void {
+  console.error("Brave Search API request failed.");
+
+  if (result.firstQuery !== undefined) {
+    console.error(`Query: ${result.firstQuery}`);
+  }
+
+  if (result.executionResult?.status !== "failure") {
+    return;
+  }
+
+  const { failure } = result.executionResult;
+
+  console.error(`Failure type: ${failure.type}`);
+
+  if (failure.httpStatus !== undefined) {
+    console.error(`HTTP status: ${failure.httpStatus}`);
+  }
+
+  console.error(`Message: ${failure.message}`);
+}
+
 async function run(argv: string[]): Promise<ResearchExitCode> {
   const cliArgs = parseCliArgs(argv);
 
   if (cliArgs.help) {
     printHelp();
     return ResearchExitCode.SUCCESS;
-  }
-
-  if (!cliArgs.dryRun) {
-    throw new CliArgumentError(
-      "M2-A currently supports --dry-run only. Add --dry-run to validate input and generate planned queries.",
-    );
   }
 
   const inputPath = cliArgs.input;
@@ -216,13 +253,29 @@ async function run(argv: string[]): Promise<ResearchExitCode> {
 
   const queries = buildSearchQueries(resolvedInputWithOutputOverride);
 
-  printDryRunResult(inputPath, resolvedInputWithOutputOverride, queries);
+  if (cliArgs.dryRun) {
+    printDryRunResult(inputPath, resolvedInputWithOutputOverride, queries);
+    return ResearchExitCode.SUCCESS;
+  }
 
-  return ResearchExitCode.SUCCESS;
+  const result = await runResearchUseCase(resolvedInputWithOutputOverride);
+
+  if (result.executionResult?.status === "failure") {
+    printM2BFailureResult(result);
+    return result.exitCode;
+  }
+
+  printM2BSuccessResult(result);
+  return result.exitCode;
 }
 
 function printInputError(error: Error): void {
   console.error("Input error");
+  console.error(error.message);
+}
+
+function printConfigError(error: Error): void {
+  console.error("Config error");
   console.error(error.message);
 }
 
@@ -250,6 +303,12 @@ async function main(): Promise<void> {
     ) {
       printInputError(error);
       process.exitCode = ResearchExitCode.INPUT_ERROR;
+      return;
+    }
+
+    if (error instanceof EnvConfigError) {
+      printConfigError(error);
+      process.exitCode = ResearchExitCode.CONFIG_ERROR;
       return;
     }
 

@@ -83,7 +83,7 @@ const searchOptionsBodySchema = z
       .max(20, "search.countPerQuery must be 20 or less")
       .default(10),
     country: nonEmptyTrimmedString.default("JP"),
-    searchLang: nonEmptyTrimmedString.default("ja"),
+    searchLang: nonEmptyTrimmedString.default("jp"),
     uiLang: nonEmptyTrimmedString.default("ja-JP"),
     extraSnippets: z
       .boolean({

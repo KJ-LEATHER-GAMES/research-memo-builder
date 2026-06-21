@@ -23,7 +23,7 @@ platforms:
 search:
   countPerQuery: 10
   country: JP
-  searchLang: ja
+  searchLang: jp
   uiLang: ja-JP
   extraSnippets: true
 
