@@ -6,14 +6,14 @@
 
 ### 判定
 
-| 観点                            |     判定 | コメント                                                                                |
-| ----------------------------- | -----: | ----------------------------------------------------------------------------------- |
-| M2-B実装内容が正しく記録されているか          |     OK | `.env` 読み込み、`EnvConfigError`、Brave Search API単一検索、CLI接続、dry-run維持が記録されています。         |
-| `searchLang: jp` の知見が記録されているか |     OK | HTTP 422の原因として `search_lang` は `ja` ではなく `jp` が必要、と明記されています。                        |
-| M2-B完了判定が明記されているか             |     OK | 8章で完了条件が明記されています。                                                                   |
-| M3以降の未対応項目が整理されているか           |     OK | 9章でM3/M4/M5以降に分類されています。                                                             |
-| ファイル実体と指定パスが一致しているか           | **NG** | 指定は `...implementation-report.md` ですが、添付ZIP内の実体は `...implementation-record.md` でした。 |
-| frontmatterが妥当か               | **NG** | `source_documents:` 配下が `*` 箇条書きになっており、YAML frontmatterとしては不正です。                    |
+| 観点                                      |   判定 | コメント                                                                                              |
+| ----------------------------------------- | -----: | ----------------------------------------------------------------------------------------------------- |
+| M2-B実装内容が正しく記録されているか      |     OK | `.env` 読み込み、`EnvConfigError`、Brave Search API単一検索、CLI接続、dry-run維持が記録されています。 |
+| `searchLang: jp` の知見が記録されているか |     OK | HTTP 422の原因として `search_lang` は `ja` ではなく `jp` が必要、と明記されています。                 |
+| M2-B完了判定が明記されているか            |     OK | 8章で完了条件が明記されています。                                                                     |
+| M3以降の未対応項目が整理されているか      |     OK | 9章でM3/M4/M5以降に分類されています。                                                                 |
+| ファイル実体と指定パスが一致しているか    | **NG** | 指定は `...implementation-report.md` ですが、添付ZIP内の実体は `...implementation-record.md` でした。 |
+| frontmatterが妥当か                       | **NG** | `source_documents:` 配下が `*` 箇条書きになっており、YAML frontmatterとしては不正です。               |
 
 ## 2. M2-Bレポートの修正必須点
 
@@ -95,13 +95,13 @@ source_documents:
 
 ### 判定一覧
 
-| ファイル                                                         |       判定 | 確認結果                                                                           |
-| ------------------------------------------------------------ | -------: | ------------------------------------------------------------------------------ |
+| ファイル                                                     |         判定 | 確認結果                                                                                                        |
+| ------------------------------------------------------------ | -----------: | --------------------------------------------------------------------------------------------------------------- |
 | `research/inputs/ats-rule-spec.yaml`                         | **確認不可** | 添付ZIP内に `research/inputs/` がありませんでした。代替として添付ルートの `ats-rule-spec.yaml` は確認済みです。 |
-| `/mnt/data/ats-rule-spec.yaml`                               |       OK | `searchLang: jp` になっています。                                                      |
-| `src/input/researchInputSchema.ts`                           |       OK | デフォルトが `jp` になっています。                                                           |
-| `docs/requirements/research-memo-builder-p0-requirements.md` |   **NG** | 入力例、デフォルト表、Brave Search APIパラメータ対応表に `ja` が残っています。                             |
-| `docs/design/research-memo-builder-p0-design.md`             |   **NG** | 入力例、SearchOptions既定値に `ja` が残っています。                                            |
+| `/mnt/data/ats-rule-spec.yaml`                               |           OK | `searchLang: jp` になっています。                                                                               |
+| `src/input/researchInputSchema.ts`                           |           OK | デフォルトが `jp` になっています。                                                                              |
+| `docs/requirements/research-memo-builder-p0-requirements.md` |       **NG** | 入力例、デフォルト表、Brave Search APIパラメータ対応表に `ja` が残っています。                                  |
+| `docs/design/research-memo-builder-p0-design.md`             |       **NG** | 入力例、SearchOptions既定値に `ja` が残っています。                                                             |
 
 ## 4. 残っている `ja` の修正箇所
 
@@ -240,16 +240,16 @@ searchLang: jp Activeドキュメント反映：未完了
 
 ## 日本語
 
-* M2-B実装レポートの中身は、実装内容・`searchLang: jp` の知見・完了判定・未対応整理ともに概ねOKです。
-* ただし、添付ZIPでは指定ファイル名 `implementation-report.md` が存在せず、実体は `implementation-record.md` でした。
-* frontmatterの `source_documents` がYAMLとして不正なので修正が必要です。
-* `src/input/researchInputSchema.ts` と添付YAMLは `jp` 反映済みです。
-* 要件定義書と設計書にはまだ `searchLang: ja` が残っているため、M3へ進む前に修正した方がよいです。
+- M2-B実装レポートの中身は、実装内容・`searchLang: jp` の知見・完了判定・未対応整理ともに概ねOKです。
+- ただし、添付ZIPでは指定ファイル名 `implementation-report.md` が存在せず、実体は `implementation-record.md` でした。
+- frontmatterの `source_documents` がYAMLとして不正なので修正が必要です。
+- `src/input/researchInputSchema.ts` と添付YAMLは `jp` 反映済みです。
+- 要件定義書と設計書にはまだ `searchLang: ja` が残っているため、M3へ進む前に修正した方がよいです。
 
 ## English
 
-* The M2-B report content is mostly OK.
-* It records the implementation, the `searchLang: jp` finding, the completion decision, and the remaining M3+ items.
-* But the file name does not match: the ZIP has `implementation-record.md`, not `implementation-report.md`.
-* The frontmatter has invalid YAML, so it should be fixed.
-* The schema and YAML are updated to `jp`, but the requirements and design docs still contain `ja`.
+- The M2-B report content is mostly OK.
+- It records the implementation, the `searchLang: jp` finding, the completion decision, and the remaining M3+ items.
+- But the file name does not match: the ZIP has `implementation-record.md`, not `implementation-report.md`.
+- The frontmatter has invalid YAML, so it should be fixed.
+- The schema and YAML are updated to `jp`, but the requirements and design docs still contain `ja`.

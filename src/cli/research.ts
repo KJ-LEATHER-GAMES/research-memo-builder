@@ -1,4 +1,7 @@
-import { runResearchUseCase } from "../application/runResearchUseCase.js";
+import {
+  runResearchUseCase,
+  type RunResearchUseCaseResult,
+} from "../application/runResearchUseCase.js";
 import { EnvConfigError } from "../config/env.js";
 import { ResearchExitCode } from "../domain/researchExitCode.js";
 import type { ResolvedResearchInput } from "../domain/researchInput.js";
@@ -13,7 +16,6 @@ import {
 } from "../input/researchInputLoader.js";
 import { buildSearchQueries } from "../services/searchQueryBuilder.js";
 import { assertSafeRelativePath, UnsafePathError } from "../utils/safePath.js";
-import type { RunResearchUseCaseResult } from "../application/runResearchUseCase.js";
 
 type ResearchCliArgs = {
   input?: string;
@@ -51,8 +53,9 @@ P0 unsupported options:
   --run-report
   --chatgpt-prompt
 
-M2-B note:
-  Normal execution calls Brave Search API for the first generated query only.
+M3 note:
+  Normal execution calls Brave Search API for all generated queries sequentially.
+  Search results are normalized and deduplicated by exact URL match.
   CSV/Markdown output is not generated yet.
 `);
 }
@@ -191,38 +194,62 @@ function printDryRunResult(
   console.log("No CSV or Markdown files were written.");
 }
 
-function printM2BSuccessResult(result: RunResearchUseCaseResult): void {
-  console.log("M2-B single search completed.");
+function printResearchRunResult(result: RunResearchUseCaseResult): void {
+  if (result.exitCode === ResearchExitCode.SUCCESS) {
+    console.log("M3 search completed.");
+  } else if (result.exitCode === ResearchExitCode.PARTIAL_API_FAILURE) {
+    console.log("M3 search completed with partial API failures.");
+  } else if (result.exitCode === ResearchExitCode.ALL_API_FAILURE) {
+    console.log("M3 search failed because all API requests failed.");
+  } else {
+    console.log("M3 search completed with non-success exit code.");
+  }
+
   console.log("");
   console.log("Search execution");
   console.log(`  Generated query count: ${result.queryCount}`);
   console.log(`  Executed query count: ${result.executedQueryCount}`);
-  console.log(`  First query: ${result.firstQuery ?? "(unknown)"}`);
-  console.log(`  Retrieved item count: ${result.retrievedItemCount}`);
+  console.log(`  Succeeded query count: ${result.succeededQueryCount}`);
+  console.log(`  Failed query count: ${result.failedQueryCount}`);
   console.log("");
-  console.log("CSV/Markdown output is skipped in M2-B.");
+  console.log("Results");
+  console.log(`  Raw item count: ${result.rawResultCount}`);
+  console.log(`  Normalized item count: ${result.normalizedResultCount}`);
+  console.log(`  Deduplicated item count: ${result.deduplicatedResultCount}`);
+  console.log(`  Removed duplicate count: ${result.removedDuplicateCount}`);
+  console.log("");
+  console.log("Output");
+  console.log("  CSV/Markdown output is skipped in M3.");
+
+  if (result.warnings.length > 0) {
+    console.log("");
+    console.log("Warnings");
+
+    for (const warning of result.warnings) {
+      console.log(`  - ${warning}`);
+    }
+  }
 }
 
-function printM2BFailureResult(result: RunResearchUseCaseResult): void {
-  console.error("Brave Search API request failed.");
-
-  if (result.firstQuery !== undefined) {
-    console.error(`Query: ${result.firstQuery}`);
-  }
-
-  if (result.executionResult?.status !== "failure") {
+function printResearchFailures(result: RunResearchUseCaseResult): void {
+  if (result.failures.length === 0) {
     return;
   }
 
-  const { failure } = result.executionResult;
+  console.error("");
+  console.error("Failed API requests");
 
-  console.error(`Failure type: ${failure.type}`);
+  for (const [index, failure] of result.failures.entries()) {
+    console.error(`  ${index + 1}. [${failure.platform}] ${failure.query}`);
+    console.error(`     keyword: ${failure.keyword}`);
+    console.error(`     type: ${failure.failureType}`);
 
-  if (failure.httpStatus !== undefined) {
-    console.error(`HTTP status: ${failure.httpStatus}`);
+    if (failure.httpStatus !== undefined) {
+      console.error(`     HTTP status: ${failure.httpStatus}`);
+    }
+
+    console.error(`     message: ${failure.message}`);
   }
-
-  console.error(`Message: ${failure.message}`);
 }
 
 async function run(argv: string[]): Promise<ResearchExitCode> {
@@ -260,12 +287,9 @@ async function run(argv: string[]): Promise<ResearchExitCode> {
 
   const result = await runResearchUseCase(resolvedInputWithOutputOverride);
 
-  if (result.executionResult?.status === "failure") {
-    printM2BFailureResult(result);
-    return result.exitCode;
-  }
+  printResearchRunResult(result);
+  printResearchFailures(result);
 
-  printM2BSuccessResult(result);
   return result.exitCode;
 }
 
