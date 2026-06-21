@@ -2,7 +2,22 @@
   "name": "research-memo-builder",
   "version": "0.1.0",
   "private": true,
+  "description": "Reserch memo builder for note articles.",
+  "homepage": "https://github.com/KJ-LEATHER-GAMES/research-memo-builder#readme",
+  "bugs": {
+    "url": "https://github.com/KJ-LEATHER-GAMES/research-memo-builder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KJ-LEATHER-GAMES/research-memo-builder.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
     "research": "tsx src/cli/research.ts",
     "typecheck": "tsc --noEmit",
@@ -11,13 +26,15 @@
     "check": "npm run typecheck && npm run format:check"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "yaml": "^2.6.1"
+    "dotenv": "^16.6.1",
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
-  }
+    "@types/node": "^22.20.0",
+    "prettier": "^3.8.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.9.3"
+  },
+  "keywords": []
 }
