@@ -113,7 +113,7 @@ platforms:
 search:
   countPerQuery: 10
   country: JP
-  searchLang: ja
+  searchLang: jp
   uiLang: ja-JP
   extraSnippets: true
 
@@ -218,7 +218,7 @@ export type SearchOptions = {
 | --------------- | ------: | ---------------------- |
 | `countPerQuery` |    `10` | 1以上20以下            |
 | `country`       |    `JP` | P0では文字列として扱う |
-| `searchLang`    |    `ja` | P0では文字列として扱う |
+| `searchLang`    |    `jp` | P0では文字列として扱う |
 | `uiLang`        | `ja-JP` | P0では文字列として扱う |
 | `extraSnippets` |  `true` | boolean                |
 

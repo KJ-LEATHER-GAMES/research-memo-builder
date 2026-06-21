@@ -181,7 +181,7 @@ platforms:
 search:
   countPerQuery: 10
   country: JP
-  searchLang: ja
+  searchLang: jp
   uiLang: ja-JP
   extraSnippets: true
 
@@ -219,7 +219,7 @@ output:
 | --------- | ---------------------- | ------: | ---: | ---------- | ------------------------------------------- |
 | P0-IN-015 | `search.countPerQuery` |  number |   No | `10`       | 指定された場合は1以上20以下とする           |
 | P0-IN-016 | `search.country`       |  string |   No | `JP`       | Brave Search API の `country` に渡す        |
-| P0-IN-017 | `search.searchLang`    |  string |   No | `ja`       | Brave Search API の `search_lang` に渡す    |
+| P0-IN-017 | `search.searchLang`    |  string |   No | `jp`       | Brave Search API の `search_lang` に渡す    |
 | P0-IN-018 | `search.uiLang`        |  string |   No | `ja-JP`    | Brave Search API の `ui_lang` に渡す        |
 | P0-IN-019 | `search.extraSnippets` | boolean |   No | `true`     | Brave Search API の `extra_snippets` に渡す |
 
@@ -308,7 +308,7 @@ site:zenn.dev 家庭内ルール 仕様書
 | ---------- | ---------------------- | -------------------------- | ------------------ |
 | P0-SEA-023 | `search.countPerQuery` | `count`                    | 1以上20以下        |
 | P0-SEA-024 | `search.country`       | `country`                  | 未指定時は `JP`    |
-| P0-SEA-025 | `search.searchLang`    | `search_lang`              | 未指定時は `ja`    |
+| P0-SEA-025 | `search.searchLang`    | `search_lang`              | 未指定時は `jp`    |
 | P0-SEA-026 | `search.uiLang`        | `ui_lang`                  | 未指定時は `ja-JP` |
 | P0-SEA-027 | `search.extraSnippets` | `extra_snippets`           | 未指定時は `true`  |
 

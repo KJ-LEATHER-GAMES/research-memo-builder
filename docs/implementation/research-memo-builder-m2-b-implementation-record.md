@@ -1,19 +1,16 @@
 ---
-
 title: Research Memo Builder M2-B 実装レポート
-document_id: research-memo-builder-m2-b-implementation-report
+document_id: research-memo-builder-m2-b-implementation-record
 status: active
 version: 1.0.0
 updated: 2026-06-21
 project: Research Memo Builder
 milestone: M2-B
-file_path: docs/implementation/research-memo-builder-m2-b-implementation-report.md
+file_path: docs/implementation/research-memo-builder-m2-b-implementation-record.md
 source_documents:
-
-* docs/implementation/research-memo-builder-m2-a-implementation-record.md
-* docs/requirements/research-memo-builder-p0-requirements.md
-* docs/design/research-memo-builder-p0-design.md
-
+  - docs/implementation/research-memo-builder-m2-a-implementation-record.md
+  - docs/requirements/research-memo-builder-p0-requirements.md
+  - docs/design/research-memo-builder-p0-design.md
 ---
 
 # Research Memo Builder M2-B 実装レポート
@@ -455,7 +452,9 @@ M2-Bは、以下を満たしたため完了とする。
 - P0注意書き出力
 - 0件時のMarkdown出力
 
-### 9.4 設計・要件への反映確認が必要なもの
+### 9.4 設計・要件への反映確認
+
+以下の反映を完了した。
 
 - Brave Search APIの `search_lang` では `jp` を使うこと
 - `search.searchLang` のデフォルト値を `ja` ではなく `jp` にすること
