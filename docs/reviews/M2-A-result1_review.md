@@ -12,10 +12,10 @@
 修正後の実行結果です。レビューをお願いします。
 
 上記修正案を反映後下記を実行
-C:\Users\monsi\AppProjects\research_memo_builder>npm run format   
+C:\Users\monsi\AppProjects\research_memo_builder>npm run format
 
 > research-memo-builder@0.1.0 format
-> prettier --write "src/**/*.ts" "research/**/*.yaml" "docs/**/*.md" "*.json"
+> prettier --write "src/**/\*.ts" "research/**/_.yaml" "docs/\*\*/_.md" "\*.json"
 
 src/cli/research.ts 45ms
 src/domain/outputOptions.ts 2ms (unchanged)
@@ -39,7 +39,7 @@ docs/proposal/proposal_ver.0.0.2.md 44ms (unchanged)
 docs/proposal/research-memo-builder_proposal.md 42ms (unchanged)
 docs/requirements/research-memo-builder-p0-requirements_Ver.0.0.1.md 37ms (unchanged)
 docs/requirements/research-memo-builder-p0-requirements.md 51ms (unchanged)
-docs/reviews/design_ver.0.1.0_review.md 16ms (unchanged)    
+docs/reviews/design_ver.0.1.0_review.md 16ms (unchanged)  
 docs/reviews/design_ver.0.1.0-draft.2.md 24ms (unchanged)
 docs/reviews/proposal_ver.0.0.1_review.md 18ms (unchanged)  
 docs/reviews/research-memo-builder-p0-requirements_Ver.0.0.1_review.md 27ms (unchanged)
@@ -53,7 +53,6 @@ C:\Users\monsi\AppProjects\research_memo_builder>npm run typecheck
 > research-memo-builder@0.1.0 typecheck
 > tsc --noEmit
 
-
 C:\Users\monsi\AppProjects\research_memo_builder>npm run research -- --input research/inputs/ats-rule-spec.yaml --dry-run
 
 > research-memo-builder@0.1.0 research
@@ -62,47 +61,47 @@ C:\Users\monsi\AppProjects\research_memo_builder>npm run research -- --input res
 Research Memo Builder dry-run completed.
 
 Input
-  File: research/inputs/ats-rule-spec.yaml
-  Topic: 家庭内ルールを書き出したら、仕様書になっていた話   
-  Article types: devDiary
+File: research/inputs/ats-rule-spec.yaml
+Topic: 家庭内ルールを書き出したら、仕様書になっていた話  
+ Article types: devDiary
 
 Search options
-  countPerQuery: 10
-  country: JP
-  searchLang: ja
-  uiLang: ja-JP
-  extraSnippets: true
+countPerQuery: 10
+country: JP
+searchLang: ja
+uiLang: ja-JP
+extraSnippets: true
 
 Output
-  Planned output dir: output/research/ats-rule-spec
-  CSV output: skipped in dry-run
-  Markdown output: skipped in dry-run
+Planned output dir: output/research/ats-rule-spec
+CSV output: skipped in dry-run
+Markdown output: skipped in dry-run
 
 Planned requests
-  15
+15
 
 Generated queries
-  1. [note] site:note.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  2. [note] site:note.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  3. [note] site:note.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  4. [note] site:note.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  5. [note] site:note.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  6. [Qiita] site:qiita.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  7. [Qiita] site:qiita.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  8. [Qiita] site:qiita.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  9. [Qiita] site:qiita.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  10. [Qiita] site:qiita.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  11. [Zenn] site:zenn.dev 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  12. [Zenn] site:zenn.dev 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  13. [Zenn] site:zenn.dev 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  14. [Zenn] site:zenn.dev 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  15. [Zenn] site:zenn.dev 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+
+1. [note] site:note.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+2. [note] site:note.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+3. [note] site:note.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+4. [note] site:note.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+5. [note] site:note.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+6. [Qiita] site:qiita.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+7. [Qiita] site:qiita.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+8. [Qiita] site:qiita.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+9. [Qiita] site:qiita.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+10. [Qiita] site:qiita.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+11. [Zenn] site:zenn.dev 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+12. [Zenn] site:zenn.dev 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+13. [Zenn] site:zenn.dev 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+14. [Zenn] site:zenn.dev 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+15. [Zenn] site:zenn.dev 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
 
 No Brave Search API calls were made.
 No CSV or Markdown files were written.
 
 `--input`なしで実行
-
 
 C:\Users\monsi\AppProjects\research_memo_builder>npm run research -- --dry-run
 
@@ -114,7 +113,6 @@ Input error
 
 research/inputs/ats-rule-spec.yaml から search: を一時的に削除して実行
 
-
 C:\Users\monsi\AppProjects\research_memo_builder>npm run research -- --input research/inputs/ats-rule-spec.yaml --dry-run
 
 > research-memo-builder@0.1.0 research
@@ -123,46 +121,47 @@ C:\Users\monsi\AppProjects\research_memo_builder>npm run research -- --input res
 Research Memo Builder dry-run completed.
 
 Input
-  File: research/inputs/ats-rule-spec.yaml
-  Topic: 家庭内ルールを書き出したら、仕様書になっていた話   
-  Article types: devDiary
+File: research/inputs/ats-rule-spec.yaml
+Topic: 家庭内ルールを書き出したら、仕様書になっていた話  
+ Article types: devDiary
 
 Search options
-  countPerQuery: 10
-  country: JP
-  searchLang: ja
-  uiLang: ja-JP
-  extraSnippets: true
+countPerQuery: 10
+country: JP
+searchLang: ja
+uiLang: ja-JP
+extraSnippets: true
 
 Output
-  Planned output dir: output/research/ats-rule-spec
-  CSV output: skipped in dry-run
-  Markdown output: skipped in dry-run
+Planned output dir: output/research/ats-rule-spec
+CSV output: skipped in dry-run
+Markdown output: skipped in dry-run
 
 Planned requests
-  15
+15
 
 Generated queries
-  1. [note] site:note.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  2. [note] site:note.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  3. [note] site:note.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  4. [note] site:note.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  5. [note] site:note.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  6. [Qiita] site:qiita.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  7. [Qiita] site:qiita.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  8. [Qiita] site:qiita.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  9. [Qiita] site:qiita.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  10. [Qiita] site:qiita.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  11. [Zenn] site:zenn.dev 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  12. [Zenn] site:zenn.dev 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  13. [Zenn] site:zenn.dev 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  14. [Zenn] site:zenn.dev 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
-  15. [Zenn] site:zenn.dev 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+
+1. [note] site:note.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+2. [note] site:note.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+3. [note] site:note.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+4. [note] site:note.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+5. [note] site:note.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+6. [Qiita] site:qiita.com 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+7. [Qiita] site:qiita.com 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+8. [Qiita] site:qiita.com 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+9. [Qiita] site:qiita.com 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+10. [Qiita] site:qiita.com 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+11. [Zenn] site:zenn.dev 家庭内ルール 仕様書 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+12. [Zenn] site:zenn.dev 家庭内ルール 要件定義 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+13. [Zenn] site:zenn.dev 家庭内 ポイント制度 設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+14. [Zenn] site:zenn.dev 子育て 仕組み化 note (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
+15. [Zenn] site:zenn.dev 家庭内ルール プロダクト設計 (count=10, country=JP, search_lang=ja, ui_lang=ja-JP, extra_snippets=true)
 
 No Brave Search API calls were made.
 No CSV or Markdown files were written.
 
-## 
+##
 
 research/inputs/ats-rule-spec.yaml から search: を戻し、output.json: trueに変更して実行。
 
@@ -200,10 +199,10 @@ tsc --noEmit
 
 前回の以下2系統の問題は解消済みです。
 
-| 前回エラー                                        | 状態 |
-| -------------------------------------------- | -- |
+| 前回エラー                                          | 状態 |
+| --------------------------------------------------- | ---- |
 | `current` / `inputPath` が `undefined` かもしれない | 解消 |
-| Zod `.default({})` の型不一致                     | 解消 |
+| Zod `.default({})` の型不一致                       | 解消 |
 
 これは良い修正です。
 
@@ -227,15 +226,15 @@ OKです。
 
 特に良い点はここです。
 
-| 確認項目             |                            結果 | 判定 |
-| ---------------- | ----------------------------: | -- |
-| YAML読み込み         |                 topicが表示されている | OK |
-| Zod検証            |                      入力が通っている | OK |
-| デフォルト値           |      `countPerQuery: 10` など表示 | OK |
-| クエリ生成            |                         15件生成 | OK |
-| 生成順              | note → Qiita → Zenn、各keyword順 | OK |
-| API呼び出しなし        |                        明示表示あり | OK |
-| CSV/Markdown出力なし |                        明示表示あり | OK |
+| 確認項目             |                             結果 | 判定 |
+| -------------------- | -------------------------------: | ---- |
+| YAML読み込み         |            topicが表示されている | OK   |
+| Zod検証              |                 入力が通っている | OK   |
+| デフォルト値         |     `countPerQuery: 10` など表示 | OK   |
+| クエリ生成           |                         15件生成 | OK   |
+| 生成順               | note → Qiita → Zenn、各keyword順 | OK   |
+| API呼び出しなし      |                     明示表示あり | OK   |
+| CSV/Markdown出力なし |                     明示表示あり | OK   |
 
 5キーワード × 3媒体 = 15クエリの生成も、P0要件の想定どおりです。
 
@@ -294,18 +293,18 @@ P0では `output.json`、`output.runReport`、`output.chatgptPrompt` が `true` 
 
 # 4. M2-A Exit条件との照合
 
-| M2-A Exit条件                     | 実行結果                      | 判定 |
-| ------------------------------- | ------------------------- | -- |
-| YAMLを読める                        | topic表示あり                 | OK |
-| Zodで入力検証できる                     | 正常系・異常系とも動作               | OK |
-| `search` 配下のデフォルト補完             | `search:` 削除で確認済み         | OK |
-| P0対象外フラグ `true` を弾ける            | `output.json: true` で確認済み | OK |
-| `platforms × keywords` で検索クエリ生成 | 15件生成                     | OK |
-| 予定リクエスト数を表示                     | `Planned requests 15`     | OK |
-| 出力予定ディレクトリを表示                   | `Planned output dir` 表示   | OK |
-| APIを呼ばない                        | 明示表示あり                    | OK |
-| CSV/Markdownを出力しない              | 明示表示あり                    | OK |
-| 型チェックが通る                        | `tsc --noEmit` OK         | OK |
+| M2-A Exit条件                           | 実行結果                       | 判定 |
+| --------------------------------------- | ------------------------------ | ---- |
+| YAMLを読める                            | topic表示あり                  | OK   |
+| Zodで入力検証できる                     | 正常系・異常系とも動作         | OK   |
+| `search` 配下のデフォルト補完           | `search:` 削除で確認済み       | OK   |
+| P0対象外フラグ `true` を弾ける          | `output.json: true` で確認済み | OK   |
+| `platforms × keywords` で検索クエリ生成 | 15件生成                       | OK   |
+| 予定リクエスト数を表示                  | `Planned requests 15`          | OK   |
+| 出力予定ディレクトリを表示              | `Planned output dir` 表示      | OK   |
+| APIを呼ばない                           | 明示表示あり                   | OK   |
+| CSV/Markdownを出力しない                | 明示表示あり                   | OK   |
+| 型チェックが通る                        | `tsc --noEmit` OK              | OK   |
 
 **判定：M2-Aは完了でよいです。**
 
@@ -410,17 +409,17 @@ Input error
 ../ を含むパス
 ```
 
-一方、要件定義側の一部では `./` を許可しない記述が見えます。 
+一方、要件定義側の一部では `./` を許可しない記述が見えます。
 
 現在の `safePath.ts` は、おそらく以下の挙動です。
 
-| 入力                      | 現コードの想定挙動 |
-| ----------------------- | --------- |
-| `../tmp`                | NG        |
-| `C:\tmp`                | NG        |
-| `/tmp`                  | NG        |
-| `output/research/tmp`   | OK        |
-| `./output/research/tmp` | OKの可能性あり  |
+| 入力                    | 現コードの想定挙動 |
+| ----------------------- | ------------------ |
+| `../tmp`                | NG                 |
+| `C:\tmp`                | NG                 |
+| `/tmp`                  | NG                 |
+| `output/research/tmp`   | OK                 |
+| `./output/research/tmp` | OKの可能性あり     |
 
 もし正本を「`../` 禁止」にするなら現状でOKです。
 もし正本を「`./` も禁止」にするなら、`safePath.ts` に追加チェックが必要です。
@@ -471,16 +470,16 @@ src/cli/research.ts
 
 ## 日本語
 
-* フォーマット、型チェック、dry-run正常系はOKです。
-* `--input` なし、`search:` 省略、`output.json: true` の異常系も期待どおりです。
-* M2-AのExit条件は満たしているため、M2-Aは完了判定でよいです。
-* 追加確認として、`npm run check`、Exit Code、`--out` の正常系・異常系を確認するとさらに堅いです。
-* 次は M2-B：`.env` 読み込み + Brave Search API単一検索 に進めます。
+- フォーマット、型チェック、dry-run正常系はOKです。
+- `--input` なし、`search:` 省略、`output.json: true` の異常系も期待どおりです。
+- M2-AのExit条件は満たしているため、M2-Aは完了判定でよいです。
+- 追加確認として、`npm run check`、Exit Code、`--out` の正常系・異常系を確認するとさらに堅いです。
+- 次は M2-B：`.env` 読み込み + Brave Search API単一検索 に進めます。
 
 ## English
 
-* Format, type check, and normal dry-run are OK.
-* Error cases for missing `--input`, missing `search`, and `output.json: true` are also OK.
-* M2-A meets the exit conditions.
-* It is good to also check `npm run check`, exit codes, and `--out`.
-* The next step is M2-B: `.env` loading and one Brave Search API request.
+- Format, type check, and normal dry-run are OK.
+- Error cases for missing `--input`, missing `search`, and `output.json: true` are also OK.
+- M2-A meets the exit conditions.
+- It is good to also check `npm run check`, exit codes, and `--out`.
+- The next step is M2-B: `.env` loading and one Brave Search API request.

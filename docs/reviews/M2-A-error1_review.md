@@ -3,10 +3,10 @@
 今回のエラーは、**フォーマットではなくTypeScriptの静的チェックで止まっています**。
 原因は大きく2つです。
 
-| 発生ファイル                             | エラー数 | 主因                                 |
-| ---------------------------------- | ---: | ---------------------------------- |
-| `src/cli/research.ts`              |   3件 | `undefined` の可能性をTypeScriptが消せていない |
-| `src/input/researchInputSchema.ts` |   1件 | Zodの `.default({})` の指定が型的に不正      |
+| 発生ファイル                       | エラー数 | 主因                                           |
+| ---------------------------------- | -------: | ---------------------------------------------- |
+| `src/cli/research.ts`              |      3件 | `undefined` の可能性をTypeScriptが消せていない |
+| `src/input/researchInputSchema.ts` |      1件 | Zodの `.default({})` の指定が型的に不正        |
 
 ---
 
@@ -43,13 +43,13 @@ switch (current) {
 特に `noUncheckedIndexedAccess` が有効、またはそれに近い厳しめの設定だと、
 
 ```ts
-argv[index]
+argv[index];
 ```
 
 は、
 
 ```ts
-string | undefined
+string | undefined;
 ```
 
 になります。
@@ -122,7 +122,7 @@ const inputPath = cliArgs.input;
 とすると、TypeScript上の型はこうなります。
 
 ```ts
-string | undefined
+string | undefined;
 ```
 
 `parseCliArgs()` の中で `--input` 必須チェックをしていても、TypeScriptはそれを `run()` 側では理解できません。
@@ -216,7 +216,8 @@ countPerQuery: 10 などを補完
 でも指定しているdefaultはこれです。
 
 ```ts
-{}
+{
+}
 ```
 
 つまりTypeScriptから見ると、
@@ -535,16 +536,16 @@ npm run research -- --input research/inputs/ats-rule-spec.yaml --dry-run
 
 ## 日本語
 
-* 今回のエラーは実質2種類です。
-* `src/cli/research.ts` は、TypeScriptが `undefined` の可能性を消せていないことが原因です。
-* `current === undefined` と `!inputPath` の明示チェックを追加すれば解消できます。
-* `src/input/researchInputSchema.ts` は、Zodの `.default({})` が最終出力型と合っていないことが原因です。
-* `z.preprocess((value) => value ?? {}, schema)` に変えるのが安全です。
+- 今回のエラーは実質2種類です。
+- `src/cli/research.ts` は、TypeScriptが `undefined` の可能性を消せていないことが原因です。
+- `current === undefined` と `!inputPath` の明示チェックを追加すれば解消できます。
+- `src/input/researchInputSchema.ts` は、Zodの `.default({})` が最終出力型と合っていないことが原因です。
+- `z.preprocess((value) => value ?? {}, schema)` に変えるのが安全です。
 
 ## English
 
-* There are two main causes.
-* In `src/cli/research.ts`, TypeScript still sees some values as possibly `undefined`.
-* Add explicit checks for `current` and `inputPath`.
-* In `researchInputSchema.ts`, `.default({})` does not match the final Zod output type.
-* Use `z.preprocess((value) => value ?? {}, schema)` to fix it.
+- There are two main causes.
+- In `src/cli/research.ts`, TypeScript still sees some values as possibly `undefined`.
+- Add explicit checks for `current` and `inputPath`.
+- In `researchInputSchema.ts`, `.default({})` does not match the final Zod output type.
+- Use `z.preprocess((value) => value ?? {}, schema)` to fix it.

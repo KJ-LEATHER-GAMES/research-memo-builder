@@ -113,12 +113,12 @@ output.json は false か
 
 Zodで主にやるのは、次の4つです。
 
-| 役割      | 内容                   | 今回の例                              |
-| ------- | -------------------- | --------------------------------- |
-| 型チェック   | 文字列・数値・boolean・配列か確認 | `topic` は string                  |
-| 制約チェック  | 範囲や空文字を確認            | `countPerQuery` は1〜20             |
-| デフォルト補完 | 省略時に既定値を入れる          | `searchLang: "ja"`                |
-| エラー表示   | どこが悪いか出す             | `output.json must be false in P0` |
+| 役割           | 内容                              | 今回の例                          |
+| -------------- | --------------------------------- | --------------------------------- |
+| 型チェック     | 文字列・数値・boolean・配列か確認 | `topic` は string                 |
+| 制約チェック   | 範囲や空文字を確認                | `countPerQuery` は1〜20           |
+| デフォルト補完 | 省略時に既定値を入れる            | `searchLang: "ja"`                |
+| エラー表示     | どこが悪いか出す                  | `output.json must be false in P0` |
 
 ---
 
@@ -131,7 +131,9 @@ import { z } from "zod";
 
 const topicSchema = z.string().min(1);
 
-const result = topicSchema.safeParse("家庭内ルールを書き出したら、仕様書になっていた話");
+const result = topicSchema.safeParse(
+  "家庭内ルールを書き出したら、仕様書になっていた話",
+);
 
 console.log(result.success);
 ```
@@ -206,9 +208,9 @@ extraSnippets はboolean。なければtrue。
 
 Zodには、代表的に2つの検証方法があります。
 
-| メソッド          | 失敗時         | 使いどころ         |
-| ------------- | ----------- | ------------- |
-| `parse()`     | 例外を投げる      | 失敗したら即停止したい   |
+| メソッド      | 失敗時                 | 使いどころ                |
+| ------------- | ---------------------- | ------------------------- |
+| `parse()`     | 例外を投げる           | 失敗したら即停止したい    |
 | `safeParse()` | 結果オブジェクトを返す | 成功/失敗で処理を分けたい |
 
 公式ドキュメントでも、`safeParse` は失敗時に例外を投げず、成功データまたはエラーを含む結果オブジェクトを返す方法として説明されています。([GitHub][3])
@@ -390,13 +392,13 @@ const schema = z.object({
 Zod検証前：
 
 ```ts
-rawInput: unknown
+rawInput: unknown;
 ```
 
 Zod検証後：
 
 ```ts
-resolvedInput: ResolvedResearchInput
+resolvedInput: ResolvedResearchInput;
 ```
 
 この差が重要です。
@@ -412,24 +414,24 @@ resolvedInput: ResolvedResearchInput
 
 M2-Aでは、主にこれをチェックします。
 
-| YAML項目                 | チェック内容                  |
-| ---------------------- | ----------------------- |
+| YAML項目               | チェック内容                   |
+| ---------------------- | ------------------------------ |
 | `topic`                | 文字列、空文字NG               |
 | `articleType`          | 3項目がboolean、最低1つtrue    |
-| `keywords`             | 1〜5件、各要素は空文字NG          |
-| `platforms`            | 1〜3件、site重複NG           |
+| `keywords`             | 1〜5件、各要素は空文字NG       |
+| `platforms`            | 1〜3件、site重複NG             |
 | `platforms[].site`     | `note.com` 形式のみ、URL形式NG |
-| `search.countPerQuery` | 1〜20                    |
-| `search.country`       | 省略時 `JP`                |
-| `search.searchLang`    | 省略時 `ja`                |
-| `search.uiLang`        | 省略時 `ja-JP`             |
-| `search.extraSnippets` | 省略時 `true`              |
-| `output.dir`           | 相対パスのみ                  |
-| `output.csv`           | P0では `true` のみ          |
-| `output.markdownMemo`  | P0では `true` のみ          |
-| `output.json`          | P0では `false` のみ         |
-| `output.runReport`     | P0では `false` のみ         |
-| `output.chatgptPrompt` | P0では `false` のみ         |
+| `search.countPerQuery` | 1〜20                          |
+| `search.country`       | 省略時 `JP`                    |
+| `search.searchLang`    | 省略時 `ja`                    |
+| `search.uiLang`        | 省略時 `ja-JP`                 |
+| `search.extraSnippets` | 省略時 `true`                  |
+| `output.dir`           | 相対パスのみ                   |
+| `output.csv`           | P0では `true` のみ             |
+| `output.markdownMemo`  | P0では `true` のみ             |
+| `output.json`          | P0では `false` のみ            |
+| `output.runReport`     | P0では `false` のみ            |
+| `output.chatgptPrompt` | P0では `false` のみ            |
 
 ---
 
@@ -484,19 +486,19 @@ Zodを入れると、入口でこう言えます。
 
 ## 日本語
 
-* Zodは、TypeScriptで使う入力データ検証ライブラリです。
-* TypeScriptの型は実行時には外部入力を守れないため、YAMLやAPIレスポンスには実行時検証が必要です。
-* Zodは、入力データが期待どおりの形か確認し、OKなら安全に使えるデータとして返します。
-* 今回のResearch Memo Builderでは、YAMLを `ResolvedResearchInput` に変換する門番として使います。
-* Zodは「外から来たデータを、後続処理に流してよいか判定する受入検査」と考えると分かりやすいです。
+- Zodは、TypeScriptで使う入力データ検証ライブラリです。
+- TypeScriptの型は実行時には外部入力を守れないため、YAMLやAPIレスポンスには実行時検証が必要です。
+- Zodは、入力データが期待どおりの形か確認し、OKなら安全に使えるデータとして返します。
+- 今回のResearch Memo Builderでは、YAMLを `ResolvedResearchInput` に変換する門番として使います。
+- Zodは「外から来たデータを、後続処理に流してよいか判定する受入検査」と考えると分かりやすいです。
 
 ## English
 
-* Zod is a validation library for TypeScript.
-* TypeScript types do not fully protect external data at runtime.
-* Zod checks if input data has the expected shape.
-* If the data is valid, Zod returns safe data for the program.
-* In this project, Zod is the gatekeeper that converts YAML input into `ResolvedResearchInput`.
+- Zod is a validation library for TypeScript.
+- TypeScript types do not fully protect external data at runtime.
+- Zod checks if input data has the expected shape.
+- If the data is valid, Zod returns safe data for the program.
+- In this project, Zod is the gatekeeper that converts YAML input into `ResolvedResearchInput`.
 
 [1]: https://zod.dev/?utm_source=chatgpt.com "Zod: Intro"
 [2]: https://zod.dev/api?utm_source=chatgpt.com "Defining schemas | Zod"
