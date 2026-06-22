@@ -196,13 +196,15 @@ function printDryRunResult(
 
 function printResearchRunResult(result: RunResearchUseCaseResult): void {
   if (result.exitCode === ResearchExitCode.SUCCESS) {
-    console.log("M3 search completed.");
+    console.log("M4 search and CSV output completed.");
   } else if (result.exitCode === ResearchExitCode.PARTIAL_API_FAILURE) {
-    console.log("M3 search completed with partial API failures.");
+    console.log("M4 search completed with partial API failures.");
   } else if (result.exitCode === ResearchExitCode.ALL_API_FAILURE) {
-    console.log("M3 search failed because all API requests failed.");
+    console.log("M4 search failed because all API requests failed.");
+  } else if (result.exitCode === ResearchExitCode.OUTPUT_ERROR) {
+    console.log("M4 search completed, but CSV output failed.");
   } else {
-    console.log("M3 search completed with non-success exit code.");
+    console.log("M4 search completed with non-success exit code.");
   }
 
   console.log("");
@@ -219,7 +221,18 @@ function printResearchRunResult(result: RunResearchUseCaseResult): void {
   console.log(`  Removed duplicate count: ${result.removedDuplicateCount}`);
   console.log("");
   console.log("Output");
-  console.log("  CSV/Markdown output is skipped in M3.");
+
+  if (result.generatedFiles.length > 0) {
+    console.log("  Generated files:");
+
+    for (const file of result.generatedFiles) {
+      console.log(`    - ${file}`);
+    }
+  } else {
+    console.log("  Generated files: None");
+  }
+
+  console.log("  Markdown output is skipped in M4.");
 
   if (result.warnings.length > 0) {
     console.log("");

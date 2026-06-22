@@ -13,6 +13,7 @@ import type { NormalizedSearchResult } from "../domain/normalizedSearchResult.js
 import { deduplicateByExactUrl } from "../services/deduplicationService.js";
 import { buildSearchQueries } from "../services/searchQueryBuilder.js";
 import { normalizeSearchResults } from "../services/searchResultNormalizer.js";
+import { writeCsvResearchResults } from "../output/csvResearchResultWriter.js";
 
 export type FailedSearchQuerySummary = {
   query: string;
@@ -118,12 +119,29 @@ export async function runResearchUseCase(
   const deduplicationResult = deduplicateByExactUrl(normalizedResults);
   const droppedResultCount = rawResultCount - normalizedResults.length;
   const warnings = buildWarnings({ droppedResultCount });
+  const generatedFiles: string[] = [];
+
+  let exitCode = resolveExitCode({
+    succeededQueryCount,
+    failedQueryCount,
+  });
+
+  if (input.output.csv) {
+    try {
+      const csvFilePath = await writeCsvResearchResults({
+        outputDir: input.output.dir,
+        results: deduplicationResult.results,
+      });
+
+      generatedFiles.push(csvFilePath);
+    } catch (error) {
+      warnings.push(buildOutputErrorWarning(error));
+      exitCode = ResearchExitCode.OUTPUT_ERROR;
+    }
+  }
 
   return {
-    exitCode: resolveExitCode({
-      succeededQueryCount,
-      failedQueryCount,
-    }),
+    exitCode,
 
     queryCount: queries.length,
     executedQueryCount: succeededQueryCount + failedQueryCount,
@@ -140,7 +158,7 @@ export async function runResearchUseCase(
     results: deduplicationResult.results,
     failures,
     warnings,
-    generatedFiles: [],
+    generatedFiles,
 
     firstQuery: firstQuery.query,
     retrievedItemCount: rawResultCount,
@@ -173,6 +191,14 @@ function buildWarnings(params: { droppedResultCount: number }): string[] {
   }
 
   return warnings;
+}
+
+function buildOutputErrorWarning(error: unknown): string {
+  if (error instanceof Error) {
+    return `CSV output failed: ${error.message}`;
+  }
+
+  return `CSV output failed: ${String(error)}`;
 }
 
 function buildEmptyResult(params: {
