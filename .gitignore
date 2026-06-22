@@ -1,6 +1,5 @@
 node_modules/
 dist/
-output/
 .env
 !.env.example
 .DS_Store
