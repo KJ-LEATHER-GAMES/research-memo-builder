@@ -586,7 +586,40 @@ Keyword,Platform,Title,Url,Snippet,ExtraSnippets,Rank,Query,RetrievedAt
 
 ### 6.5 Markdown仕様
 
-ファイル名は固定で `research-memo.md` とする。
+M5では、検索結果を人間がレビューしやすいリサーチメモとして `research-memo.md` に出力する。
+
+Markdownは最終記事本文ではなく、note記事作成前の調査メモとして扱う。
+P0では、Brave Search APIレスポンスに含まれるタイトル、URL、スニペット、追加スニペットのみを利用し、検索結果URLへの直接HTTPアクセス、記事本文取得、有料部分取得、価格の確定取得、AI要約は行わない。
+
+#### 6.5.1 出力ファイル
+
+| 項目           | 設計                               |
+| -------------- | ---------------------------------- |
+| ファイル名     | `research-memo.md`                 |
+| 出力先         | `resolvedInput.output.dir`         |
+| `--out` 指定時 | CLI引数 `--out` の指定先を優先する |
+| 文字コード     | UTF-8 without BOM                  |
+| 改行コード     | LF                                 |
+| 既存ファイル   | 確認なしで上書きする               |
+| dry-run時      | 出力しない                         |
+| 出力失敗時     | Exit Code `5` とする               |
+
+#### 6.5.2 入力データ
+
+Markdown生成には、URL完全一致重複排除後の検索結果を使用する。
+
+| Markdown出力に使う情報 | 取得元                                                             |
+| ---------------------- | ------------------------------------------------------------------ |
+| 対象記事候補           | `ResolvedResearchInput.topic`, `ResolvedResearchInput.articleType` |
+| 検索条件               | `ResolvedResearchInput.keywords`, `platforms`, `search`            |
+| 検索結果一覧           | `DeduplicationResult.results`                                      |
+| 件数情報               | `ResearchRunResult` の各種count                                    |
+| warning                | `ResearchRunResult.warnings`                                       |
+| Exit Code              | `ResearchRunResult.exitCode`                                       |
+
+検索結果の表示対象は `NormalizedSearchResult[]` とする。
+
+#### 6.5.3 Markdown章構成
 
 章構成は以下で固定する。
 
@@ -616,13 +649,154 @@ Keyword,Platform,Title,Url,Snippet,ExtraSnippets,Rank,Query,RetrievedAt
 ## P0生成メモ
 ```
 
-P0生成メモには、以下の注意書きを必ず含める。
+#### 6.5.4 各章の出力方針
+
+| 章                                | P0出力方針                                                              |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| `対象記事候補`                    | 入力YAMLの `topic` と `articleType` を出力する                          |
+| `検索条件`                        | 対象媒体、キーワード数、検索件数、extraSnippets設定、出力先を出力する   |
+| `1. 検索したキーワード`           | 入力YAMLの `keywords` を箇条書きで出力する                              |
+| `2. 似たタイトルがあるか`         | 検索結果のタイトル、URL、媒体、キーワード、rank、スニペットを一覧化する |
+| `3. どんな切り口が多いか`         | P0では自動分析せず、「要確認」欄を生成する                              |
+| `4. 無料部分で何を約束しているか` | P0では自動分析せず、「要確認」欄を生成する                              |
+| `5. 価格帯はいくらか`             | P0では価格を確定取得しないため、「要確認」欄を生成する                  |
+| `6. 自分ならどこで差別化できるか` | 固定の差別化観点テンプレートを出力する                                  |
+| `7. 記事化判断`                   | 判断テンプレートを出力する                                              |
+| `8. 次に作るなら`                 | 次アクション用の「要確認」欄を生成する                                  |
+| `P0生成メモ`                      | P0の制約、件数、warning、注意書きを出力する                             |
+
+#### 6.5.5 検索結果の表示形式
+
+`2. 似たタイトルがあるか` では、重複排除後の検索結果を以下の形式で出力する。
+
+```markdown
+### {Platform} / {Keyword}
+
+1. [{Title}]({Url})
+   - Rank: {Rank}
+   - Snippet: {Snippet}
+   - ExtraSnippets: {ExtraSnippets}
+```
+
+表示順は以下を基本とする。
+
+1. `platforms` の定義順
+2. `keywords` の定義順
+3. `rank` の昇順
+
+URL完全一致重複排除により除外された検索結果は、Markdownには表示しない。
+
+#### 6.5.6 ExtraSnippetsの扱い
+
+`extraSnippets` は、Markdown上では1行にまとめて表示する。
+
+| ケース                         | 出力                         |
+| ------------------------------ | ---------------------------- |
+| `extraSnippets` が1件以上ある  | `/` 区切りで連結して表示する |
+| `extraSnippets` が空配列       | `なし` と表示する            |
+| `extraSnippets` 内に改行がある | 半角スペースに置換する       |
+
+#### 6.5.7 Markdownエスケープ
+
+Markdown崩れを防ぐため、検索結果由来の文字列は表示用にエスケープする。
+
+対象は以下。
+
+- `title`
+- `snippet`
+- `extraSnippets`
+- `keyword`
+- `platform`
+
+P0では、完全なMarkdown sanitizerは実装しない。
+最低限、表記崩れやリンク崩れにつながりやすい文字を抑制する。
+
+リンクURLは、Brave Search APIレスポンスの `url` をそのまま使用する。
+ただし、P0では検索結果URLへ直接HTTPアクセスしない。
+
+#### 6.5.8 0件時のMarkdown
+
+全クエリが成功し、検索結果が0件の場合も `research-memo.md` を出力する。
+
+0件時は、`2. 似たタイトルがあるか` に以下を出力する。
+
+```markdown
+検索結果候補はありませんでした。
+```
+
+`P0生成メモ` には、検索自体は成功したが結果が0件だったことを明記する。
+
+Exit Codeは `0` とする。
+
+#### 6.5.9 一部API失敗時のMarkdown
+
+一部クエリがAPI失敗し、1件以上のクエリが成功した場合は、成功分の検索結果からMarkdownを生成する。
+
+`P0生成メモ` には以下を出力する。
+
+- 一部API失敗が発生したこと
+- 生成クエリ数
+- 成功クエリ数
+- 失敗クエリ数
+- 検索結果件数
+- 重複排除後件数
+
+Exit Codeは `1` とする。
+
+#### 6.5.10 全API失敗時のMarkdown
+
+すべてのクエリがAPI失敗した場合も、出力可能であれば `research-memo.md` を生成する。
+
+この場合、検索結果一覧は空とし、`P0生成メモ` に全クエリ失敗を明記する。
+
+```markdown
+すべての検索クエリが失敗したため、検索結果候補は生成されませんでした。
+```
+
+Exit Codeは `4` とする。
+
+ただし、Markdown出力自体にも失敗した場合は `OUTPUT_ERROR = 5` を優先する。
+
+#### 6.5.11 Markdown出力失敗時
+
+Markdownファイルの書き込みに失敗した場合は、warningを追加し、最終Exit Codeを `5` とする。
+
+CSV出力が成功していても、Markdown出力に失敗した場合は `5` を優先する。
+
+CSVとMarkdownの両方で出力失敗が発生した場合も、Exit Codeは `5` とする。
+
+#### 6.5.12 generatedFilesへの追加
+
+Markdown出力に成功した場合は、`ResearchRunResult.generatedFiles` に `research-memo.md` の出力パスを追加する。
+
+CSVとMarkdownの両方が成功した場合、`generatedFiles` には以下の2件が入る。
+
+```text
+output/research/{slug}/search-results.csv
+output/research/{slug}/research-memo.md
+```
+
+#### 6.5.13 P0生成メモの注意書き
+
+`P0生成メモ` には、以下の注意書きを必ず含める。
 
 ```markdown
 > このメモは検索結果のタイトル・URL・スニペットをもとにしたP0下書きです。  
 > 記事本文、有料部分、正確な価格情報は取得していません。  
 > 切り口、無料部分の約束、価格帯は人間レビューで確認してください。
 ```
+
+#### 6.5.14 M5実装対象ファイル
+
+M5では、以下のファイル追加・修正を想定する。
+
+| ファイル                                        | 扱い                                               |
+| ----------------------------------------------- | -------------------------------------------------- |
+| `src/utils/markdownEscape.ts`                   | 新規追加。Markdown表示用の最低限のエスケープを行う |
+| `src/renderers/markdownResearchMemoRenderer.ts` | 新規追加。Markdown文字列を生成する                 |
+| `src/output/markdownResearchMemoWriter.ts`      | 新規追加。Markdownファイルを書き込む               |
+| `src/application/runResearchUseCase.ts`         | Markdown出力をUseCaseへ接続する                    |
+| `src/cli/research.ts`                           | Markdown生成ファイルとwarning表示を更新する        |
 
 ### 6.6 上書き方針
 
@@ -777,6 +951,11 @@ research-memo-builder/
       researchInputLoader.ts
       researchInputValidator.ts
 
+    src/
+      output/
+        csvResearchResultWriter.ts
+        markdownResearchMemoWriter.ts
+
     adapters/
       braveSearchClient.ts
 
@@ -803,23 +982,25 @@ research-memo-builder/
 
 ### 8.2 責務分担
 
-| パス                                            | 責務                                                |
-| ----------------------------------------------- | --------------------------------------------------- |
-| `src/cli/research.ts`                           | CLI引数パース、UseCase呼び出し、終了コード反映      |
-| `src/application/runResearchUseCase.ts`         | P0処理全体のオーケストレーション                    |
-| `src/config/env.ts`                             | `.env` 読み込み、`BRAVE_API_KEY` 検証               |
-| `src/input/researchInputLoader.ts`              | YAMLファイル読み込み、パース                        |
-| `src/input/researchInputValidator.ts`           | 入力検証、デフォルト補完                            |
-| `src/services/searchQueryBuilder.ts`            | `site:{domain} {keyword}` クエリ生成                |
-| `src/adapters/braveSearchClient.ts`             | Brave Search API呼び出し                            |
-| `src/services/searchResultNormalizer.ts`        | Braveレスポンスから `NormalizedSearchResult` へ変換 |
-| `src/services/deduplicationService.ts`          | URL完全一致重複排除                                 |
-| `src/renderers/csvRenderer.ts`                  | CSV文字列生成                                       |
-| `src/renderers/markdownResearchMemoRenderer.ts` | Markdown文字列生成                                  |
-| `src/repositories/fileOutputRepository.ts`      | ディレクトリ作成、ファイル書き込み                  |
-| `src/utils/csvEscape.ts`                        | CSV値エスケープ                                     |
-| `src/utils/markdownEscape.ts`                   | Markdown表示用エスケープ                            |
-| `src/utils/safePath.ts`                         | 出力パス検証                                        |
+| パス                                            | 責務                                                     |
+| ----------------------------------------------- | -------------------------------------------------------- |
+| `src/cli/research.ts`                           | CLI引数パース、UseCase呼び出し、終了コード反映           |
+| `src/application/runResearchUseCase.ts`         | P0処理全体のオーケストレーション                         |
+| `src/config/env.ts`                             | `.env` 読み込み、`BRAVE_API_KEY` 検証                    |
+| `src/input/researchInputLoader.ts`              | YAMLファイル読み込み、パース                             |
+| `src/input/researchInputValidator.ts`           | 入力検証、デフォルト補完                                 |
+| `src/services/searchQueryBuilder.ts`            | `site:{domain} {keyword}` クエリ生成                     |
+| `src/adapters/braveSearchClient.ts`             | Brave Search API呼び出し                                 |
+| `src/services/searchResultNormalizer.ts`        | Braveレスポンスから `NormalizedSearchResult` へ変換      |
+| `src/services/deduplicationService.ts`          | URL完全一致重複排除                                      |
+| `src/renderers/csvRenderer.ts`                  | CSV文字列生成                                            |
+| `src/renderers/markdownResearchMemoRenderer.ts` | Markdown文字列生成                                       |
+| `src/repositories/fileOutputRepository.ts`      | ディレクトリ作成、ファイル書き込み                       |
+| `src/utils/csvEscape.ts`                        | CSV値エスケープ                                          |
+| `src/utils/markdownEscape.ts`                   | Markdown表示用エスケープ                                 |
+| `src/utils/safePath.ts`                         | 出力パス検証                                             |
+| `src/output/csvResearchResultWriter.ts`         | CSV出力先ディレクトリ作成、BOM付与、CSVファイル書き込み  |
+| `src/output/markdownResearchMemoWriter.ts`      | Markdown出力先ディレクトリ作成、Markdownファイル書き込み |
 
 ### 8.3 P1以降で追加する候補
 

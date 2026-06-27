@@ -53,10 +53,10 @@ P0 unsupported options:
   --run-report
   --chatgpt-prompt
 
-M3 note:
+M5 note:
   Normal execution calls Brave Search API for all generated queries sequentially.
   Search results are normalized and deduplicated by exact URL match.
-  CSV/Markdown output is not generated yet.
+  CSV and Markdown memo files are generated when output succeeds.
 `);
 }
 
@@ -194,17 +194,28 @@ function printDryRunResult(
   console.log("No CSV or Markdown files were written.");
 }
 
+function hasGeneratedFile(
+  result: RunResearchUseCaseResult,
+  filename: string,
+): boolean {
+  return result.generatedFiles.some((file) => file.endsWith(filename));
+}
+
 function printResearchRunResult(result: RunResearchUseCaseResult): void {
   if (result.exitCode === ResearchExitCode.SUCCESS) {
-    console.log("M4 search and CSV output completed.");
+    console.log("M5 search and research outputs completed.");
   } else if (result.exitCode === ResearchExitCode.PARTIAL_API_FAILURE) {
-    console.log("M4 search completed with partial API failures.");
+    console.log(
+      "M5 search completed with partial API failures. Research outputs were generated from succeeded results when possible.",
+    );
   } else if (result.exitCode === ResearchExitCode.ALL_API_FAILURE) {
-    console.log("M4 search failed because all API requests failed.");
+    console.log(
+      "M5 search failed because all API requests failed. Empty research outputs were generated when possible.",
+    );
   } else if (result.exitCode === ResearchExitCode.OUTPUT_ERROR) {
-    console.log("M4 search completed, but CSV output failed.");
+    console.log("M5 search completed, but one or more output files failed.");
   } else {
-    console.log("M4 search completed with non-success exit code.");
+    console.log("M5 search completed with non-success exit code.");
   }
 
   console.log("");
@@ -221,6 +232,20 @@ function printResearchRunResult(result: RunResearchUseCaseResult): void {
   console.log(`  Removed duplicate count: ${result.removedDuplicateCount}`);
   console.log("");
   console.log("Output");
+  console.log(
+    `  CSV output: ${
+      hasGeneratedFile(result, "search-results.csv")
+        ? "generated"
+        : "not generated"
+    }`,
+  );
+  console.log(
+    `  Markdown memo output: ${
+      hasGeneratedFile(result, "research-memo.md")
+        ? "generated"
+        : "not generated"
+    }`,
+  );
 
   if (result.generatedFiles.length > 0) {
     console.log("  Generated files:");
@@ -231,8 +256,6 @@ function printResearchRunResult(result: RunResearchUseCaseResult): void {
   } else {
     console.log("  Generated files: None");
   }
-
-  console.log("  Markdown output is skipped in M4.");
 
   if (result.warnings.length > 0) {
     console.log("");

@@ -14,6 +14,7 @@ import { deduplicateByExactUrl } from "../services/deduplicationService.js";
 import { buildSearchQueries } from "../services/searchQueryBuilder.js";
 import { normalizeSearchResults } from "../services/searchResultNormalizer.js";
 import { writeCsvResearchResults } from "../output/csvResearchResultWriter.js";
+import { writeMarkdownResearchMemo } from "../output/markdownResearchMemoWriter.js";
 
 export type FailedSearchQuerySummary = {
   query: string;
@@ -119,6 +120,7 @@ export async function runResearchUseCase(
   const deduplicationResult = deduplicateByExactUrl(normalizedResults);
   const droppedResultCount = rawResultCount - normalizedResults.length;
   const warnings = buildWarnings({ droppedResultCount });
+  const generatedAt = new Date().toISOString();
   const generatedFiles: string[] = [];
 
   let exitCode = resolveExitCode({
@@ -135,7 +137,31 @@ export async function runResearchUseCase(
 
       generatedFiles.push(csvFilePath);
     } catch (error) {
-      warnings.push(buildOutputErrorWarning(error));
+      warnings.push(buildOutputErrorWarning("CSV", error));
+      exitCode = ResearchExitCode.OUTPUT_ERROR;
+    }
+  }
+
+  if (input.output.markdownMemo) {
+    try {
+      const markdownFilePath = await writeMarkdownResearchMemo({
+        input,
+        results: deduplicationResult.results,
+        generatedAt,
+        outputDir: input.output.dir,
+        queryCount: queries.length,
+        succeededQueryCount,
+        failedQueryCount,
+        totalResultCountBeforeDeduplication: rawResultCount,
+        totalResultCountAfterDeduplication: deduplicationResult.results.length,
+        removedDuplicateCount: deduplicationResult.removedCount,
+        warnings,
+        exitCode,
+      });
+
+      generatedFiles.push(markdownFilePath);
+    } catch (error) {
+      warnings.push(buildOutputErrorWarning("Markdown", error));
       exitCode = ResearchExitCode.OUTPUT_ERROR;
     }
   }
@@ -193,12 +219,12 @@ function buildWarnings(params: { droppedResultCount: number }): string[] {
   return warnings;
 }
 
-function buildOutputErrorWarning(error: unknown): string {
+function buildOutputErrorWarning(outputType: string, error: unknown): string {
   if (error instanceof Error) {
-    return `CSV output failed: ${error.message}`;
+    return `${outputType} output failed: ${error.message}`;
   }
 
-  return `CSV output failed: ${String(error)}`;
+  return `${outputType} output failed: ${String(error)}`;
 }
 
 function buildEmptyResult(params: {
