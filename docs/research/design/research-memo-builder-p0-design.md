@@ -690,11 +690,11 @@ URL完全一致重複排除により除外された検索結果は、Markdownに
 
 `extraSnippets` は、CSVおよびMarkdownでは1行の文字列にまとめて出力する。
 
-| ケース                         | Markdown出力                    | CSV出力                         |
-| ------------------------------ | ------------------------------- | ------------------------------- |
-| `extraSnippets` が1件以上ある  | ` / ` 区切りで連結して表示する | ` / ` 区切りで連結して出力する |
-| `extraSnippets` が空配列       | `なし` と表示する               | 空文字として出力する            |
-| `extraSnippets` 内に改行がある | 半角スペースに置換する          | 半角スペースに置換する          |
+| ケース                         | Markdown出力                 | CSV出力                      |
+| ------------------------------ | ---------------------------- | ---------------------------- |
+| `extraSnippets` が1件以上ある  | `/` 区切りで連結して表示する | `/` 区切りで連結して出力する |
+| `extraSnippets` が空配列       | `なし` と表示する            | 空文字として出力する         |
+| `extraSnippets` 内に改行がある | 半角スペースに置換する       | 半角スペースに置換する       |
 
 #### 6.5.7 Markdownエスケープ
 
@@ -951,10 +951,9 @@ research-memo-builder/
       researchInputLoader.ts
       researchInputValidator.ts
 
-    src/
-      output/
-        csvResearchResultWriter.ts
-        markdownResearchMemoWriter.ts
+    output/
+      csvResearchResultWriter.ts
+      markdownResearchMemoWriter.ts
 
     adapters/
       braveSearchClient.ts
