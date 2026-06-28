@@ -1,6 +1,6 @@
 export type MarkdownInlineValue = string | number | boolean | null | undefined;
 
-const MARKDOWN_SPECIAL_CHAR_PATTERN = /[\\`*_{}\[\]<>()#+\-!|]/g;
+const MARKDOWN_SPECIAL_CHAR_PATTERN = /[\\`*_{}\[\]<>()#+!|]/g;
 const LINE_BREAK_PATTERN = /\r\n|\r|\n/g;
 const CONTINUOUS_WHITESPACE_PATTERN = /[ \t]+/g;
 

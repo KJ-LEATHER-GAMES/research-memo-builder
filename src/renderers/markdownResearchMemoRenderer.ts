@@ -100,12 +100,11 @@ function renderSimilarTitlesSection(
   }
 
   const groups = groupResults(renderInput);
+  const renderedGroups = groups
+    .map((group) => renderResultGroup(group))
+    .join("\n\n");
 
-  return [
-    "## 2. 似たタイトルがあるか",
-    "",
-    ...groups.map((group) => renderResultGroup(group)),
-  ].join("\n\n");
+  return ["## 2. 似たタイトルがあるか", "", renderedGroups].join("\n");
 }
 
 function renderCutSection(): string {
