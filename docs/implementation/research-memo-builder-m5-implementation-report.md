@@ -13,7 +13,7 @@ scope: Markdown research memo output
 
 ## 1. 概要
 
-M5では、`research_memo_builder` のP0出力として、既存のCSV出力に加えてMarkdown形式のリサーチメモ出力を実装した。
+M5では、`research-memo-builder` のP0出力として、既存のCSV出力に加えてMarkdown形式のリサーチメモ出力を実装した。
 
 M4時点では、検索結果の取得・正規化・重複排除・CSV出力までを対象としていた。M5では、重複排除後の検索結果をもとに、note記事作成前の人間レビューに使うための `research-memo.md` を生成する機能を追加した。
 
@@ -41,7 +41,7 @@ M5で主に扱ったファイルは以下である。
 | `src/output/markdownResearchMemoWriter.ts`       | Markdownファイル書き込み処理を追加             |
 | `src/application/runResearchUseCase.ts`          | CSV出力に加えてMarkdown出力を接続            |
 | `src/cli/research.ts`                            | M5向けにCLI表示を更新                     |
-| `docs/design/research-memo-builder-p0-design.md` | M5 Markdown出力仕様の設計元               |
+| `docs/design/research-memo-builder-p0-design.md` | M5 Markdown出力仕様の参照元               |
 
 ### 2.2 Markdownエスケープ処理
 
@@ -290,7 +290,7 @@ M5で実施した確認は以下。
 | 区分                 | 内容                                  | 結果 |
 | ------------------ | ----------------------------------- | -- |
 | 静的チェック             | `npm run typecheck`                 | OK |
-| フォーマット             | `npm run format`                    | OK |
+| フォーマット             | `npm run format:check`              | OK |
 | 総合チェック             | `npm run check`                     | OK |
 | 正常系                | CSV / Markdown両方生成                  | OK |
 | 一部API失敗            | 成功分からCSV / Markdown生成、Exit Code `1` | OK |
