@@ -25,7 +25,7 @@ Research Memo Builder は、note記事投稿前の既存記事リサーチを、
 対象ファイルは以下である。
 
 ```text
-docs/research/research-memo-builder-p0-requirements.md
+docs/requirements/research-memo-builder-p0-requirements.md
 ```
 
 ---
@@ -546,7 +546,7 @@ P0の `research-memo.md` には、以下の注意書きを含める。
 
 | ID         | ケース                                           | 出力方針                                                                       | exit code |
 | ---------- | ------------------------------------------------ | ------------------------------------------------------------------------------ | --------: |
-| P0-ERR-020 | すべてのクエリがAPI失敗                          | 正常なリサーチ結果として扱わず、CSV/Markdownを成果物として出力しない           |         1 |
+| P0-ERR-020 | すべてのクエリがAPI失敗 | 正常なリサーチ結果として扱わず、可能なら空CSV/失敗メモを生成する | 4 |
 | P0-ERR-021 | API失敗と検索結果0件の区別                       | API失敗は異常、検索結果0件は正常な検索結果として扱う                           |         - |
 | P0-ERR-022 | 全クエリ成功、検索結果0件                        | ヘッダー行のみのCSVと、0件であることを明記したMarkdownを出力する               |         0 |
 | P0-ERR-023 | 一部クエリAPI失敗、1件以上のクエリ成功           | 成功分からCSV/Markdownを生成する                                               |         0 |
@@ -641,7 +641,7 @@ npm run research -- --input research/inputs/ats-rule-spec.yaml
 
 | ID        | 受け入れ条件                                                              | 対応要件   |
 | --------- | ------------------------------------------------------------------------- | ---------- |
-| P0-AC-001 | `docs/research/research-memo-builder-p0-requirements.md` が作成されている | 本書       |
+| P0-AC-001 | `docs/requirements/research-memo-builder-p0-requirements.md` が作成されている | 本書       |
 | P0-AC-002 | P0対象範囲と対象外が明確になっている                                      | 3章        |
 | P0-AC-003 | 入力YAMLの必須項目、任意項目、デフォルト補完、型、制約が定義されている    | 5章        |
 | P0-AC-004 | 5キーワード×3媒体で15クエリが生成されることが定義されている               | 6章        |
